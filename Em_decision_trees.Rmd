@@ -1,0 +1,73 @@
+---
+title: "Em_decision_trees"
+author: "me"
+date: "3/7/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(stats)
+library(caret)
+library(class)
+library(gmodels)
+```
+
+```{r}
+data1 <- read.csv('C:\\Users\\mattm\\OneDrive\\Desktop\\march_7_hmwk_5\\HW4-data-fedPapers85.csv')
+data1 <- data1 %>%  mutate_if(is.character, as.factor)
+
+
+validation_index <- sample(1:nrow(data1), floor(.8*nrow(data1)))
+validation <- data1[-validation_index,]
+data2 <- data1[validation_index,]
+
+
+```
+
+```{r}
+control <- trainControl(method="cv", number=10)
+metric <- "Accuracy"
+```
+
+```{r}
+# CART
+set.seed(7)
+fit.cart <- train(author~., data=data2, method="rpart", metric=metric, trControl=control)
+
+```
+
+```{r}
+print(fit.cart)
+```
+
+
+```{r}
+training_testing_index <- sample(1:nrow(data2), floor((2/3)*nrow(data2)))
+data_train <- data1[training_testing_index,]
+data_test <- data1[-training_testing_index,]
+data_train_labs <- data1[training_testing_index,1]
+data_test_labs <- data1[-training_testing_index,1]
+
+```
+
+```{r}
+data_pred <- predict(fit.cart, validation)
+confusionMatrix(data_pred, validation$author)
+
+```
+
+
+
+
+```{r}
+```
+
+
+
+
+
+
+
